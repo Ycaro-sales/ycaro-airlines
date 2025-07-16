@@ -3,8 +3,6 @@ from uuid import UUID, uuid4
 from typing import Dict, List, Tuple, NewType
 import peewee
 
-peewee.Model
-
 
 class Model:
     _items: Dict[UUID, "Model"] = {}

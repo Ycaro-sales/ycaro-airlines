@@ -14,106 +14,46 @@ Airline Reservation System
 • Multi-City Booking: Booking flights with multiple stopovers;
 • Customer Support Interface: Assisting customers with their queries and issues
 
-## Project Components
-- Flights
-    - has Baggage Fee
-    - has crew
-    - Has a status(Landing, Departing, Boarding, Waiting for checkin(?), Open, Full)
-    - Can have stops
-    - has seats
-        - has passengers
-    - has passengers
-    - has arrival and departing times
-    - has check in time 
+## Requirements in progress (date: 16/07/2025)
+-  Flight Search: Users can search for flights based on various criteria; 
+-  Booking Management: Users can book, cancel, and modify flight bookings;
+-  What is done:
+    - Base model
+    - Customer, Planes, Flights, and Account Models
+    - Started Working on Account and Flight Controllers
+    - No user interface as of now
+### How to test it without ui?
+```bash
+$ python -m venv env
+$ source env/bin/activate
+$ pip install -r requirements.txt
+$ cd src 
+$ IPython --no-autoident
+>>> from models.accounts import * 
+>>> from models.airlines import *
+>>> from controllers.AccountController import *
+>>> from controllers.FlightsController import *
+>>> # test controllers and models from here
+```
+
+
+## Project Structure
+Models
 - Flight Crew
-    - Is allocated to a flight
-    - Have Current City
-    - Can receive special requests
+- Flights
+- Flight Crew
 - Passengers
-    - can Book, cancel and modify Flights
-    - Has and can receive loyalty points
-    - Has and can  be allocated a seat in a flight
-    - Can do online check-ins
-    - Can make special requests
 - Cities
-    - has Airports
-    - has Distance between other cities
 - Airports
-    - Has Flights 
-    - Belongs to a City
 - Airlines
-    - Has passengers
-    - Has available Crew
-    - Has customers support 
-        - Has pending customer support 
-    - Can Aproove special requests
 - Customer Support 
-    - Has pending Requests
+Controllers
+- AccountController
+- FlightController
+- AirlinesController
+Views
 
 
 ## Possible Ideas
 - Simulate Real-time flights using virtual clocks to simulate the airlines working
-
-## Roadmap
-1. Booking 
-    - Create Planes
-        - Booked Flights
-    - Create Flight class
-        - items
-            - Flight Status
-                - Available
-                - Departed
-                - Arrival
-                - Landing 
-            - Capacity
-                - Capacity Status
-                    - Full 
-                    - Empty
-                    - Boarding
-            - Model(?)
-            - From
-            - To
-            - Gate
-            - Airport
-            - Departure(Time)
-            - Arrival(Time)
-            - Available Seats(dict)
-        - Methods
-            - Depart
-            - Arrive
-            - is_full
-            - has_seat
-            - available_seats
-            - Get Model
-            - Get Destination
-            - Set Destination
-    - Create Passenger class
-        - Items
-            - Booked Flights
-        - Methods
-            - request_book_flight
-            - cancel_flight
-            - get_booked_flights
-    - Create Airline Worker
-        - Flights Manager 
-        - Boarding Manager(?)
-    - Create Airline
-        -
-        - items
-            - Flights
-        - Methods
-            - Show Flights to and from:
-    - Create Airport Class
-        - City
-        - Gates
-2. Flight search
-3. Seat selection
-4. Online Check-in
-5. Flight Status
-6. Multi-city Booking
-7. Baggage Information
-8. Loyalty Program
-9. Customer Support
-10. Special  Requests
-     
 
