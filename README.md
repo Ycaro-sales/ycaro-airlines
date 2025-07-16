@@ -22,8 +22,11 @@ Airline Reservation System
     - Customer, Planes, Flights, and Account Models
     - Started Working on Account and Flight Controllers
     - No user interface as of now
+
 ### How to test it without ui?
 ```bash
+$ git clone https://github.com/ycaro-sales/ycaro-airlines.git
+$ cd ycaro-airlines
 $ python -m venv env
 $ source env/bin/activate
 $ pip install -r requirements.txt
