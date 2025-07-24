@@ -1,4 +1,7 @@
+from collections import Counter
 from datetime import datetime, timedelta
+from enum import Enum, auto
+from functools import reduce
 from itertools import count
 from typing import Dict, Optional
 from random import randint, sample
@@ -32,6 +35,39 @@ class Flight:
     def __str__(self):
         return f"{self.id} - {self.From} -> {self.To}\n{stringify_date(self.departure)} -> {stringify_date(self.arrival)} | R${self.price} "
 
+
+class BookingStatus(Enum):
+    booked = 1
+    checked_in = auto()
+    cancelled = auto()
+
+
+class Booking:
+    booking_counter = count()
+
+    def __init__(self, flight: Flight):
+        self.flight = flight
+        self.id = next(self.booking_counter)
+        self.status = BookingStatus
+        self.seat = self.select_seat()
+
+    def cancel_booking(self):
+        pass
+
+    def check_in(self):
+        pass
+
+    def select_seat(self):
+        pass
+
+
+class Customer:
+    customer_counter = count()
+
+    def __init__(self, username: str) -> None:
+        self.username: str = username
+        self.id: int = next(self.customer_counter)
+        self.fligths: list[Booking] = []
 
 
 flights: Dict[int, Flight] = {}
@@ -118,9 +154,23 @@ def to_key(flight: Flight):
     return flight.To[0]
 
 
+def box(text_lines: list[str]):
+    longest_text_len = len(reduce(lambda x, y: y if len(y) > len(x) else x, text_lines))
+
+    print("".join(("┏", "━" * longest_text_len, "┓")))
+    for i in text_lines:
+        print("".join(("┃", i, " " * (longest_text_len - len(i)), "┃")))
+
+    print("".join(("┗", "━" * longest_text_len, "┛")))
+
+
+def menu(title: str, question: str, options: dict):
+    pass
+
+
+def main():
+    pass
+
+
 if __name__ == "__main__":
-    mock_flight()
-    mock_flight()
-    mock_flight()
-    mock_flight()
-    mock_flight()
+    main()

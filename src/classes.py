@@ -1,8 +1,44 @@
 from typing import List
 from uuid import UUID, uuid4
+from enum import Enum
+from typing import Dict
+from datetime import timedelta
 
 
-class Client:
+class cities(Enum):
+    Maceio = "Maceio"
+    Recife = "Recife"
+    Aracaju = "Aracaju"
+    Joao_pessoa = "Joao Pessoa"
+
+    @classmethod
+    def distance(cls, city1: "cities", city2: "cities"):
+        distances: Dict[cities, Dict[cities, timedelta]] = {
+            cities.Maceio: {
+                cities.Aracaju: timedelta(hours=1),
+                cities.Recife: timedelta(hours=1),
+                cities.Joao_pessoa: timedelta(hours=2),
+            },
+            cities.Aracaju: {
+                cities.Maceio: timedelta(hours=1),
+                cities.Recife: timedelta(hours=2),
+                cities.Joao_pessoa: timedelta(hours=3),
+            },
+            cities.Recife: {
+                cities.Maceio: timedelta(hours=1),
+                cities.Joao_pessoa: timedelta(hours=1),
+                cities.Aracaju: timedelta(hours=2),
+            },
+            cities.Joao_pessoa: {
+                cities.Aracaju: timedelta(hours=3),
+                cities.Maceio: timedelta(hours=2),
+                cities.Recife: timedelta(hours=1),
+            },
+        }
+        return distances[city1][city2]
+
+
+class Customer:
     def __init__(self, username: str) -> None:
         self.username: str = username
         self.id = uuid4()
@@ -10,15 +46,15 @@ class Client:
 
 
 class Flight:
-    def __init__(self, From: str, To: str, capacity: int = 255) -> None:
-        self.From: str = From
-        self.To: str = To
+    def __init__(self, From: cities, To: cities, capacity: int = 255) -> None:
+        self.From: cities = From
+        self.To: cities = To
         self.id: UUID = uuid4()
         self.capacity: int = capacity
-        self.passengers: List[Client] = []
+        self.passengers: List[Customer] = []
         self.seats_filled = 0
 
-    def board(self, passenger: Client) -> UUID | None:
+    def board(self, passenger: Customer) -> UUID | None:
         if self.seats_filled == self.capacity:
             return None
 
