@@ -22,3 +22,29 @@ Airline Reservation System
 ## Requirements in progress (date: 16/07/2025)
 -  Flight Search: Users can search for flights based on various criteria; 
 -  Booking Management: Users can book, cancel, and modify flight bookings;
+
+
+# Fluxo de Usuario
+
+- [-] Logar como Cliente
+    - [x] Ver voos
+        - [x] Comprar Passagem 
+            - [-] Selecionar assentos
+            - [ ] Visualizar informacoes de bagagens
+            - [ ] Realizar pedidos especiais
+        - [ ] - Visualizar Voos
+            - [ ] filtrar voos
+            - [ ] Visualizar informacoes de bagagens
+            - [ ] Ordenar voos
+    - [ ] Gerenciar Passagens
+    - [ ] Check-in Online
+        - [ ] Selecionar assentos
+        - [ ] Realizar pedidos especiais
+        - [ ] Visualizar informacoes de bagagens
+    - [ ] Gerenciar Milhas
+        - [ ] Verificar historico
+        - [ ] Resgatar pontos
+            - [ ] Selecionar premio
+        - [ ] Visualizar premios
+    - [ ] SAC
+        - [ ] chat?
