@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
+from functools import reduce
 from random import randint, sample
 from enum import Enum, auto
 from itertools import count
 from rich.table import Table
 from rich.console import Console
-from typing import Optional, Self
+from typing import Any, Callable, Optional, Self, TypeVar, Generic
 
 cities = ["Maceio", "Recife", "Aracaju", "Joao Pessoa"]
+T = TypeVar("T")
 
 
 def stringify_date(date: datetime):
@@ -33,7 +35,7 @@ class Flight:
         self.departure: datetime = departure
         self.arrival: datetime = arrival
         self.price: float = price
-        self.seats: list["Booking | None"] = [None for i in range(0, self.capacity)]
+        self.seats: list["Booking | None"] = [None for _ in range(0, self.capacity)]
 
     def __str__(self):
         return f"{self.id} - {self.From} -> {self.To}\n{stringify_date(self.departure)} -> {stringify_date(self.arrival)} | R${self.price} "
@@ -70,7 +72,12 @@ class Flight:
         return list(cls.flights.values())
 
     @classmethod
-    def print_flights_table(cls, console: Console):
+    def print_flights_table(
+        cls, console: Console, filters: list[Callable[[list[Any]]]] | None = None
+    ):
+        # filtered_flights = cls.list_flights()
+        # for filter in filters:
+        #     filtered_flights = filter(filtered_flights)
         table = Table(title="Flights")
         table.add_column("Flight")
         table.add_column("From", justify="right", no_wrap=True)
@@ -149,6 +156,8 @@ class Booking:
 
     def cancel_booking(self):
         self.status = BookingStatus.cancelled
+        if self.seat:
+            self.flight.seats[self.seat] = None
 
     @classmethod
     def list_bookings(cls, customer: Customer):
