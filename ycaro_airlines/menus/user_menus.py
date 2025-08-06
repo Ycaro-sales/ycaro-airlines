@@ -1,13 +1,35 @@
 from typing import Callable, Tuple
-from ycaro_airlines.menus import menu_factory
+
+import questionary
+from ycaro_airlines.menus import menu_factory, customer_menu
+from ycaro_airlines.models.customer import Customer
 
 
 def login_action():
-    pass
+    username = questionary.select(
+        "Select a user to login:",
+        choices=[v.username for v in Customer.customers.values()],
+    ).ask()
+
+    user = Customer.get_by_username(username)
+
+    if user is None:
+        print("Invalid User!")
+        return
+
+    customer_menu(user)
 
 
 def signup_action():
-    pass
+    username = questionary.text(
+        "Username:",
+        default="",
+        validate=lambda x: True
+        if x not in {v.username for v in Customer.customers.values()}
+        else False,
+    ).ask()
+    Customer(username=username)
+    print("Sign Up Successful!")
 
 
 def user_menu():

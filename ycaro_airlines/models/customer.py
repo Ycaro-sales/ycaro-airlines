@@ -21,6 +21,13 @@ class Customer:
     def get(cls, customer_id: int):
         return cls.customers.get(customer_id)
 
+    @classmethod
+    def get_by_username(cls, customer_username: str):
+        for v in cls.customers.values():
+            if v.username == customer_username:
+                return v
+        return None
+
     def gain_loyalty_points(self, amount: int):
         self.loyalty_points += amount
 
