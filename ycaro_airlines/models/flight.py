@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
+from enum import Enum, auto
 from itertools import count
 from math import inf
 from random import randint, sample
+from typing import Dict
 
 from rich.table import Table
 from rich.console import Console
@@ -15,7 +17,6 @@ from typing import (
     Optional,
     Unpack,
 )
-from ycaro_airlines.models import Booking
 
 cities = ["Maceio", "Recife", "Aracaju", "Joao Pessoa"]
 
@@ -24,7 +25,22 @@ def stringify_date(date: datetime):
     return f"{str(date.hour).zfill(2)}:{str(date.minute).zfill(2)} {str(date.day).zfill(2)}/{str(date.month).zfill(2)}"
 
 
+type booking_id = int
+
 type filter = Callable[[List[Any]], List[Any]]
+
+
+class SeatStatus(Enum):
+    open = 0
+    reserved = auto()
+    checked_in = auto()
+
+
+class Seat:
+    def __init__(self, status: SeatStatus, id: int, booking: booking_id | None = None):
+        self.status: SeatStatus = status
+        self.booking: booking_id | None = booking
+        self.id: int
 
 
 class FlightQueryParams(TypedDict):
@@ -63,7 +79,9 @@ class Flight:
         self.departure: datetime = departure
         self.arrival: datetime = arrival
         self.price: float = price
-        self.seats: list["Booking | None"] = [None for _ in range(0, self.capacity)]
+        self.seats: Dict[int, Seat] = {
+            id: Seat(SeatStatus.open, id, None) for id in range(0, self.capacity)
+        }
 
     def __str__(self):
         return f"{self.id} - {self.From} -> {self.To}\n{stringify_date(self.departure)} -> {stringify_date(self.arrival)} | R${self.price} "
@@ -85,15 +103,35 @@ class Flight:
         Flight.flights[mock.id] = mock
         return mock
 
-    def check_in_booking(self, booking: "Booking"):
-        if booking.seat is None:
-            return
+    def check_in_seat(self, booking_id: booking_id, seat_id: int):
+        seat = self.seats.get(seat_id)
 
-    # TODO: Implement reserve seat
-    def reserve_seat(self, booking: "Booking", seat: int):
-        if self.seats[seat] is not None:
+        if seat is None or seat.booking != booking_id:
             return False
-        self.seats[seat] = booking
+
+        seat.status = SeatStatus.checked_in
+        return True
+
+    def occupy_seat(self, booking_id: booking_id, seat_id: int) -> Seat | None:
+        if (seat := self.seats.get(seat_id)) is not None:
+            if seat.status is not SeatStatus.open:
+                return None
+
+            seat.status = SeatStatus.reserved
+            seat.booking = booking_id
+
+            return seat
+
+        return None
+
+    def open_seat(self, seat_id: int):
+        if self.seats.get(seat_id) is None:
+            return False
+
+        self.seats[seat_id].booking = None
+        self.seats[seat_id].status = SeatStatus.open
+
+        return True
 
     @classmethod
     def get_flight(cls, fligth_id: int):
@@ -103,12 +141,8 @@ class Flight:
     def list_flights(cls, **query: Unpack[FlightQueryParams]) -> List["Flight"]:
         filtered_list: List[Flight] = list(cls.flights.values())
 
-        if query.get("flight_id"):
-            for i in filtered_list:
-                if i.id == query.get("flight_id"):
-                    return [i]
-                else:
-                    return []
+        if flight_id := query.get("flight_id"):
+            return [i for i in filtered_list if i.id == flight_id]
 
         if query.get("date_arrival_gte") or query.get("date_arrival_lte"):
             filtered_list = filter_by_date(

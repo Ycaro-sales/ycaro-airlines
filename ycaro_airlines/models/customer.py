@@ -1,6 +1,6 @@
 from itertools import count
 from typing import Self
-from ycaro_airlines.models import Booking
+from ycaro_airlines.models.booking import Booking
 
 
 class Customer:
@@ -11,7 +11,18 @@ class Customer:
         self.username: str = username
         self.id: int = next(self.customer_counter)
         self.customers[self.id] = self
+        self.loyalty_points = 0
 
     @property
     def bookings(self):
-        return {k: v for k, v in Booking.bookings.items() if v.owner == self}
+        return {k: v for k, v in Booking.bookings.items() if v.owner_id == self.id}
+
+    @classmethod
+    def get(cls, customer_id: int):
+        return cls.customers.get(customer_id)
+
+    def gain_loyalty_points(self, amount: int):
+        self.loyalty_points += amount
+
+    def spend_loyalty_points(self, amount: int):
+        self.loyalty_points -= amount

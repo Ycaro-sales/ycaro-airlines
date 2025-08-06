@@ -3,7 +3,7 @@ Project made for Software Project class for the 2025.1 semester
 
 ## Project Functional Requirements
 Airline Reservation System
-- [-]  Flight Search: Users can search for flights based on various criteria;
+- [x]  Flight Search: Users can search for flights based on various criteria;
 - [x] Booking Management: Users can book, cancel, and modify flight bookings;
 - [x] Online Check-in: Users can check in online for their flights;
 - [x] Seat Selection: Users can select and change their seats;
@@ -33,7 +33,7 @@ Airline Reservation System
             - [x] Visualizar informacoes de bagagens
             - [ ] Realizar pedidos especiais
         - [x] - Visualizar Voos
-            - [-] filtrar voos
+            - [x] filtrar voos
             - [x] Visualizar informacoes de bagagens
     - [x] Gerenciar Passagens
     - [x] Check-in Online

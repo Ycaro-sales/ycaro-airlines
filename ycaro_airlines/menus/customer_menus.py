@@ -3,7 +3,7 @@ from ycaro_airlines.actions.booking_actions import (
     select_seat_action,
     check_in_action,
     cancel_booking_action,
-    create_booking_action,
+    book_flight_action,
 )
 
 from ycaro_airlines.actions.flight_actions import search_flight_action
@@ -15,21 +15,21 @@ from functools import partial
 
 def customer_menu(user: Customer):
     options: list[Tuple[str, Callable]] = [
-        ("Ver Voos", partial(flights_menu, user=user)),
-        ("Ver bilhetes", partial(bookings_menu, user=user)),
+        ("Browse Flights", partial(flights_menu, user=user)),
+        ("My Bookings", partial(bookings_menu, user=user)),
     ]
 
     menu_factory("Customer Menu", options)()
 
 
 def bookings_menu(user: Customer):
-    Booking.print_bookings_table(user, console)
+    Booking.print_bookings_table(user.id, console)
 
     booking_id = questionary.autocomplete(
-        "Insira o id da passagem que voce deseja gerenciar: ",
-        choices=[str(i.id) for i in Booking.list_bookings(user)],
+        "Type the id of the booking you wish to manage:",
+        choices=[str(i.id) for i in Booking.list_bookings(user.id)],
         validate=lambda x: True
-        if x in {str(i.id) for i in Booking.list_bookings(user)}
+        if x in {str(i.id) for i in Booking.list_bookings(user.id)}
         else False,
     ).ask()
 
@@ -38,11 +38,11 @@ def bookings_menu(user: Customer):
 
     options: list[Tuple[str, Callable]] = [
         (
-            "Cancelar Passagem",
+            "Cancel Booking",
             partial(cancel_booking_action, user=user, booking=booking),
         ),
-        ("Modificar Assento", partial(select_seat_action, booking=booking)),
-        ("Check-in Online", partial(check_in_action, booking=booking)),
+        ("Change Seat", partial(select_seat_action, booking=booking)),
+        ("Online Check-in", partial(check_in_action, user=user, booking=booking)),
     ]
 
     if booking.status != BookingStatus.booked:
@@ -58,10 +58,17 @@ def bookings_menu(user: Customer):
 
 def flights_menu(user: Customer):
     options: list[Tuple[str, Callable]] = [
-        ("Book flight", partial(create_booking_action, user=user)),
-        ("Search/filter flights", search_flight_action),
+        ("Book flight", partial(book_flight_action, user=user)),
+        ("Search flights", search_flight_action),
     ]
 
     Flight.print_flights_table(console)
 
     menu_factory("Flights", options)()
+
+
+def loyalty_menu(user: Customer):
+    options: list[Tuple[str, Callable]] = [
+        ("Book flight", partial(book_flight_action, user=user)),
+        ("Search flights", search_flight_action),
+    ]

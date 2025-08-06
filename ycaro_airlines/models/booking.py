@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from itertools import count
-from typing import Self, Optional
-from ycaro_airlines.models import Flight, Customer, stringify_date
+from typing import Self
+from ycaro_airlines.models.flight import Flight, stringify_date
 from rich.table import Table
 from rich.console import Console
 
@@ -12,43 +12,73 @@ class BookingStatus(Enum):
     cancelled = auto()
 
 
+type customer_id = int
+
+
 class Booking:
     booking_counter = count()
     bookings: dict[int, Self] = {}
 
-    def __init__(self, flight: Flight, customer: Customer):
+    def __init__(
+        self,
+        flight: Flight,
+        customer_id: customer_id,
+        passenger_name: str,
+        passenger_cpf: str,
+    ):
         self.flight = flight
         self.id = next(self.booking_counter)
-        self.owner = customer
+        self.owner_id = customer_id
+        self.price = self.flight.price
         self.status = BookingStatus.booked
-        self.seat = None
+        self.seat_id: int | None = None
         self.bookings[self.id] = self
+        self.passenger_name = passenger_name
+        self.passenger_cpf = passenger_cpf
 
     def cancel_booking(self):
         self.status = BookingStatus.cancelled
-        if self.seat:
-            self.flight.seats[self.seat] = None
+
+        if self.seat_id:
+            self.flight.open_seat(self.seat_id)
+
+    @property
+    def seat(self):
+        return self.flight.seats[self.seat_id] if self.seat_id else None
 
     @classmethod
-    def list_bookings(cls, customer: Customer):
+    def list_bookings(cls, customer_id: customer_id):
         return list(
             filter(
-                lambda x: True if x.owner.id == customer.id else False,
+                lambda x: True if x.owner_id == customer_id else False,
                 cls.bookings.values(),
             )
         )
 
-    def check_in(self, seat: Optional[int] = None):
-        self.status = BookingStatus.checked_in
-        if self.seat is None and seat is not None:
-            self.select_seat(seat)
+    def check_in(self) -> bool:
+        if self.seat_id is None:
+            print("Booking seat not chosen")
+            return False
 
-    def select_seat(self, seat: int):
-        self.seat = seat
-        self.flight.check_in_booking(self)
+        if not self.flight.check_in_seat(self.id, self.seat_id):
+            return False
+
+        self.status = BookingStatus.checked_in
+
+        return True
+
+    def reserve_seat(self, seat_id: int) -> bool:
+        if (reserved_seat := self.flight.occupy_seat(self.id, seat_id)) is None:
+            return False
+
+        if self.seat_id:
+            self.flight.open_seat(self.seat_id)
+
+        self.seat_id = reserved_seat.id
+        return True
 
     @classmethod
-    def print_bookings_table(cls, customer: Customer, console: Console):
+    def print_bookings_table(cls, customer_id: customer_id, console: Console):
         table = Table(title="Bookings")
         table.add_column("Booking")
         table.add_column("Flight")
@@ -58,7 +88,7 @@ class Booking:
         table.add_column("Arrival", justify="right", no_wrap=True)
         table.add_column("Status", justify="right", no_wrap=True)
 
-        for i in cls.list_bookings(customer):
+        for i in cls.list_bookings(customer_id):
             table.add_row(
                 f"{i.id}",
                 f"{i.flight.id}",

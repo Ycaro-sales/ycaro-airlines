@@ -7,14 +7,14 @@ from ycaro_airlines.menus.base_menu import console
 
 
 def str_can_be_float(string: str) -> bool:
-    if re.fullmatch(r"[0-9]*\.?[0-9]*", string):
+    if re.fullmatch(r"[0-9]*\.?[0-9]*|^$", string):
         return True
     return False
 
 
 def str_can_be_date(string: str) -> bool:
     if re.fullmatch(
-        r"0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0,1,2])\/(19|20)\d{2}", string
+        r"0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0,1,2])\/(19|20)\d{2}|^$", string
     ):
         return True
     return False
@@ -48,20 +48,23 @@ def search_flight_action():
 
     if "price" in selected:
         price_lte = questionary.text(
-            "Price <=:", default="inf", validate=str_can_be_float
+            "Price <= (default: infinity):", default="", validate=str_can_be_float
         ).ask()
 
         if price_lte == "":
             price_lte = inf
 
         price_gte = questionary.text(
-            "Price >=:",
-            default="0",
+            "Price >= (default: 0):",
+            default="",
             validate=str_can_be_float,
         ).ask()
 
-        if price_lte == "inf":
+        if price_lte == "":
             price_lte = inf
+
+        if price_gte == "":
+            price_gte = 0
 
         query_params["price_lte"] = float(price_lte)
         query_params["price_gte"] = float(price_gte)
