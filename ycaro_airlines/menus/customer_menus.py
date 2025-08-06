@@ -84,11 +84,11 @@ def flights_menu(user: Customer):
 
 
 def show_loyalty_points_action(user: Customer):
-    pass
+    print("not implemented!")
 
 
 def claim_rewards_action(user: Customer):
-    pass
+    print("not implemented!")
 
 
 # TODO: Implement loyalty menu

@@ -16,6 +16,8 @@ def menu_factory(title: str, options: list[Tuple[str, Callable]]):
             match selection:
                 case "":
                     break
+                case None:
+                    break
                 case _:
                     selection()
 

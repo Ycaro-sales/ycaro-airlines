@@ -68,7 +68,9 @@ class Booking:
         return True
 
     def reserve_seat(self, seat_id: int) -> bool:
-        if (reserved_seat := self.flight.occupy_seat(self.id, seat_id)) is None:
+        reserved_seat = self.flight.occupy_seat(booking_id=self.id, seat_id=seat_id)
+
+        if reserved_seat is None:
             return False
 
         if self.seat_id:
@@ -87,6 +89,7 @@ class Booking:
         table.add_column("Destination")
         table.add_column("Arrival", justify="right", no_wrap=True)
         table.add_column("Status", justify="right", no_wrap=True)
+        table.add_column("Seat", justify="right", no_wrap=True)
 
         for i in cls.list_bookings(customer_id):
             table.add_row(
@@ -97,6 +100,7 @@ class Booking:
                 f"{i.flight.To}",
                 f"{stringify_date(i.flight.arrival)}",
                 f"{i.status.name}",
+                f"{i.seat_id}" if i.seat_id else "N/A",
             )
 
         console.print(table)

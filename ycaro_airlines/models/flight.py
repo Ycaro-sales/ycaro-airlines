@@ -40,7 +40,7 @@ class Seat:
     def __init__(self, status: SeatStatus, id: int, booking: booking_id | None = None):
         self.status: SeatStatus = status
         self.booking: booking_id | None = booking
-        self.id: int
+        self.id: int = id
 
 
 class FlightQueryParams(TypedDict):
@@ -80,7 +80,8 @@ class Flight:
         self.arrival: datetime = arrival
         self.price: float = price
         self.seats: Dict[int, Seat] = {
-            id: Seat(SeatStatus.open, id, None) for id in range(0, self.capacity)
+            id: Seat(status=SeatStatus.open, id=id, booking=None)
+            for id in range(0, self.capacity)
         }
 
     def __str__(self):
@@ -113,16 +114,16 @@ class Flight:
         return True
 
     def occupy_seat(self, booking_id: booking_id, seat_id: int) -> Seat | None:
-        if (seat := self.seats.get(seat_id)) is not None:
-            if seat.status is not SeatStatus.open:
-                return None
+        if (seat := self.seats.get(seat_id)) is None:
+            return None
 
-            seat.status = SeatStatus.reserved
-            seat.booking = booking_id
+        if seat.status is not SeatStatus.open:
+            return None
 
-            return seat
+        seat.status = SeatStatus.reserved
+        seat.booking = booking_id
 
-        return None
+        return seat
 
     def open_seat(self, seat_id: int):
         if self.seats.get(seat_id) is None:

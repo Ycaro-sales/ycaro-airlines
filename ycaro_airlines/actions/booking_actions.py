@@ -5,6 +5,8 @@ from ycaro_airlines.menus import console
 from rich.table import Table
 from rich.console import Console
 
+from ycaro_airlines.models.flight import SeatStatus
+
 
 def book_flight_action(user: Customer):
     flight_id = questionary.autocomplete(
@@ -99,9 +101,18 @@ def show_baggage_information(booking: Booking, console: Console):
 def select_seat_action(booking: Booking):
     seat = questionary.autocomplete(
         "Which seat do you want?",
-        choices=[str(i) for i, v in enumerate(booking.flight.seats) if v is None],
+        choices=[
+            str(k)
+            for k, v in booking.flight.seats.items()
+            if v.status is SeatStatus.open
+        ],
         validate=lambda x: True
-        if x in {str(i) for i, v in enumerate(booking.flight.seats) if v is None}
+        if x
+        in {
+            str(k)
+            for k, v in booking.flight.seats.items()
+            if v.status is SeatStatus.open
+        }
         else False,
     ).ask()
 
@@ -109,6 +120,7 @@ def select_seat_action(booking: Booking):
         return False
 
     seat = int(seat)
+
     booking.reserve_seat(seat)
 
 
