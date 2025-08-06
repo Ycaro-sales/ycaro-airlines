@@ -1,20 +1,14 @@
+from ycaro_airlines.menus.account_menus import accounts_menu
 from ycaro_airlines.models import Flight, Customer
-from ycaro_airlines.menus import customer_menu
-
-
-class App:
-    def __init__(self) -> None:
-        pass
 
 
 def main():
-    for i in range(0, 10):
+    for _ in range(0, 20):
         Flight.mock_flight()
 
-    user = Customer(username="ycaro")
-    customer_menu(user)
+    Customer("Default")
 
-    pass
+    accounts_menu()
 
 
 if __name__ == "__main__":

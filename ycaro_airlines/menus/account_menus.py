@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import Callable, Tuple
 
 import questionary
@@ -8,13 +9,16 @@ from ycaro_airlines.models.customer import Customer
 def login_action():
     username = questionary.select(
         "Select a user to login:",
-        choices=[v.username for v in Customer.customers.values()],
+        choices=[v.username for v in chain(Customer.customers.values())],
     ).ask()
+
+    if username is None:
+        return
 
     user = Customer.get_by_username(username)
 
     if user is None:
-        print("Invalid User!")
+        print("Invalid Username!")
         return
 
     customer_menu(user)
@@ -32,9 +36,10 @@ def signup_action():
     print("Sign Up Successful!")
 
 
-def user_menu():
+def accounts_menu():
     options: list[Tuple[str, Callable]] = [
         ("Login", login_action),
         ("Sign up", signup_action),
     ]
-    menu_factory("User menu", options=options)()
+
+    menu_factory("Accounts Menu", options=options)()

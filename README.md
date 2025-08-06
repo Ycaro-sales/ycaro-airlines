@@ -40,7 +40,7 @@ Airline Reservation System
         - [x] Selecionar assentos
         - [ ] Realizar pedidos especiais
         - [x] Visualizar informacoes de bagagens
-    - [ ] Gerenciar Milhas
+    - [-] Gerenciar Milhas
         - [ ] Verificar historico
         - [ ] Resgatar pontos
             - [ ] Selecionar premio
