@@ -68,17 +68,37 @@ class Flight:
         From: str,
         To: str,
         capacity: int = 255,
-        departure: datetime = datetime.now() + timedelta(hours=1),
-        arrival: datetime = datetime.now() + timedelta(hours=3),
+        departure_date: datetime = datetime.now() + timedelta(hours=1),
+        arrival_date: datetime = datetime.now() + timedelta(hours=3),
         price: float = 200.00,
     ) -> None:
-        self.From: str = From
-        self.To: str = To
-        self.id: int = next(self.flight_counter)
+        self.From = From
+
+        self.To = To
+
+        self.id = next(self.flight_counter)
+
         self.capacity = capacity
-        self.departure: datetime = departure
-        self.arrival: datetime = arrival
-        self.price: float = price
+        if capacity < 0:
+            raise ValueError("Capacity must be a positive number")
+
+        if departure_date < datetime.today():
+            raise ValueError("Departure date must be a future date")
+
+        if arrival_date < datetime.today():
+            raise ValueError("Arrival date must be a future date")
+
+        if arrival_date < departure_date:
+            raise ValueError("Flight must depart before arrival")
+
+        self.departure = departure_date
+        self.arrival = arrival_date
+
+        if price < 0:
+            raise ValueError("Flight price must be positive")
+
+        self.price = price
+
         self.seats: Dict[int, Seat] = {
             id: Seat(status=SeatStatus.open, id=id, booking=None)
             for id in range(0, self.capacity)
@@ -96,8 +116,10 @@ class Flight:
         mock: Flight = Flight(
             From=city1,
             To=city2,
-            departure=datetime.now() + timedelta_arrival,
-            arrival=datetime.now() + timedelta_arrival + timedelta(hours=randint(1, 5)),
+            departure_date=datetime.now() + timedelta_arrival,
+            arrival_date=datetime.now()
+            + timedelta_arrival
+            + timedelta(hours=randint(1, 5)),
             price=price,
         )
 

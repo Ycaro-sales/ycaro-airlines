@@ -8,6 +8,9 @@ class Customer:
     customers: dict[int, Self] = {}
 
     def __init__(self, username: str) -> None:
+        if username == "":
+            raise ValueError("Username must be filled")
+
         self.username: str = username
         self.id: int = next(self.customer_counter)
         self.customers[self.id] = self
